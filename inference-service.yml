@@ -1,0 +1,40 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    opendatahub.io/hardware-profile-namespace: redhat-ods-applications
+    opendatahub.io/legacy-hardware-profile-name: small-serving-1bmle
+    openshift.io/display-name: ensemble-model
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    serving.kserve.io/deploymentMode: Serverless
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: ensemble-model
+
+  namespace: demo
+#  finalizers:
+#    - inferenceservice.finalizers
+#    - odh.inferenceservice.finalizers
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    automountServiceAccountToken: false
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: ensemble
+        version: '1'
+      name: ''
+      resources:
+        limits:
+          cpu: '8'
+          memory: 10Gi
+        requests:
+          cpu: '4'
+          memory: 8Gi
+      runtime: ensemble-model
+      storage:
+        key: minio
+        path: model_repository
